@@ -19,8 +19,7 @@ export class FDXParser {
         // fast-xml-parser options
         const options = {
             ignoreAttributes: false,
-            attributeNamePrefix: "@_",
-            textNodeName: "Text"
+            attributeNamePrefix: "@_"
         };
         const parser = new XMLParser(options);
 
@@ -57,9 +56,7 @@ export class FDXParser {
                 const textNodes = Array.isArray(p.Text) ? p.Text : [p.Text];
                 text = textNodes.map(node => {
                     if (typeof node === 'string') return node;
-                    // If textNodeName is "Text", the content is in node.Text
-                    if (node && node.Text) return node.Text;
-                    // If default #text processing or mixed content
+                    // A <Text> with attributes (e.g. Style) keeps its content in #text
                     if (node && node["#text"]) return node["#text"];
                     return "";
                 }).join("");
