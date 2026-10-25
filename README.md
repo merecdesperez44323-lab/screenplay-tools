@@ -1,5 +1,25 @@
 # screenplay-tools
 
+> **This is a fork** of [wildwinter/screenplay-tools](https://github.com/wildwinter/screenplay-tools), maintained for
+> the Python implementation only. The JavaScript, C# and C++ implementations are upstream's, unchanged; the shared
+> fixtures in `tests/` follow the Python implementation where the fixes below changed them (`LineBreaks.txt`,
+> `Writer-output.fountain`). Changes from upstream, each against the [Fountain spec](https://fountain.io/syntax) and
+> tested in `python/tests/fountain/test_spec.py`:
+>
+> - **Line numbers.** Every element, title entry, note and boneyard has `line`, the source line it starts on, counted
+>   from 1.
+> - **Forced scene headings in any script.** A leading period followed by any alphanumeric character forces a scene
+>   heading (Scene Headings: "a single leading period followed by an alphanumeric character"), so `.内景 茶馆 - 清晨`
+>   is a heading, not only `.SNIPER SCOPE POV`.
+> - **The Writer writes back what the Parser reads.** A character forced with `@` keeps `forced`, so its `@` is written
+>   (Character: "helpful for names that require lower-case letters, and for non-Roman languages"); the dual-dialogue
+>   caret is written last (Dual Dialogue: "the caret is the last character on the line"); a forced action (`!`) stays
+>   an element of its own, so its `!` is written (Line Breaks). Every fixture reads back the same after parse, write
+>   and parse.
+>
+> Known, kept as upstream: an unforced scene heading needs no blank line around it, though the spec says it "has a
+> blank line following it" and "always has at least one blank line preceding it"; the shared fixtures rely on that.
+
 **screenplay-tools** is a set of libraries for representing a format-agnostic screenplay format, with support for import and export to the [Fountain](https://fountain.io/) script-writing language and [Final Draft](https://finaldraft.com/) FDX files. These libraries are written in **C++**, **Javascript**, **Python**, and **C#**.
 
 ## Fountain

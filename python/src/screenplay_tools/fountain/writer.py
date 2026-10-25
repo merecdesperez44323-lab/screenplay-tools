@@ -66,8 +66,6 @@ class Writer:
             pad = "\t" * 3 if self.pretty_print else ""
             char = elem.name
 
-            if elem.is_dual_dialogue:
-                char += " ^"
             if elem.extension:
                 char += f" ({elem.extension})"
             if elem.forced:
@@ -76,6 +74,9 @@ class Writer:
             if self._last_char == ext_char:
                 char += " (CONT'D)"
             self._last_char = ext_char
+            # "the caret is the last character on the line" (fountain.io/syntax, Dual Dialogue)
+            if elem.is_dual_dialogue:
+                char += " ^"
             return f"{pad}{char}"
 
         if elem_type == ElementType.DIALOGUE:

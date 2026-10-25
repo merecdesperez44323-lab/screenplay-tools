@@ -14,9 +14,8 @@ DIALOGUE:"Where is that pit boss?"
 ACTION:"No luck. He has no choice to deal the cards."
 PAGEBREAK:""
 HEADING:"INT. CASINO - NIGHT"
-ACTION:"THE DEALER eyes the new player warily.
-
-SCANNING THE AISLES…
+ACTION:"THE DEALER eyes the new player warily."
+ACTION:"SCANNING THE AISLES…
 Where is that pit boss?
 
 No luck. He has no choice to deal the cards."
