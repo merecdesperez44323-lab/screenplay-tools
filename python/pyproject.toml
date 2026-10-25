@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "screenplay-tools"
-version = "0.0.10"
+version = "0.0.10+fork.1"
 description = "Utils for working with screenplays and the Fountain and FDX scriptwriting formats."
 readme = { file = "README.md", content-type = "text/markdown" }
 authors = [
@@ -20,8 +20,9 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/wildwinter/screenplay-tools"
-"Bug Tracker" = "https://github.com/wildwinter/screenplay-tools/issues"
+"Homepage" = "https://github.com/merecdesperez44323-lab/screenplay-tools"
+"Bug Tracker" = "https://github.com/merecdesperez44323-lab/screenplay-tools/issues"
+"Upstream" = "https://github.com/wildwinter/screenplay-tools"
 
 [tool.setuptools]
 package-dir = {"" = "src"}   # Our code is inside "src/" folder

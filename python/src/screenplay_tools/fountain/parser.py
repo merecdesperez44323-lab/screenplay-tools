@@ -54,6 +54,8 @@ class Parser:
 
         self._inDialogue = False
 
+        self._lineNumber = 0
+
     def add_text(self, input_text):
         """Parse a block of text (UTF-8) into the script."""
         lines = input_text.splitlines()
@@ -67,6 +69,24 @@ class Parser:
 
     def add_line(self, line):
         """Parse a single line of text."""
+        self._lineNumber += 1
+        self._parse_line(line)
+        self._stamp_lines()
+
+    def _stamp_lines(self):
+        """Give every element made from the current line the number of that line. Elements are made while their own
+        line is read, even those that wait for the next line to be committed, so the newest unnumbered ones are this
+        line's."""
+        made = (self.script.titleEntries, self.script.elements, self.script.notes, self.script.boneyards,
+                self._padActions, [e for p in self._pending for e in (p["element"], p["backup"])],
+                [e for e in (self._note, self._boneyard) if e])
+        for elements in made:
+            for elem in reversed(elements):
+                if elem.line is not None:
+                    break
+                elem.line = self._lineNumber
+
+    def _parse_line(self, line):
         self._lastLine = self._line
         self._lastLineEmpty = is_whitespace_or_empty(self._line)
 
@@ -160,7 +180,8 @@ class Parser:
         # Add padding actions if any
         if elem.type == ElementType.ACTION and self._padActions:
             if self.mergeActions and last_elem and not last_elem.centered:
-                for pad_action in self._padActions:
+                # Before a forced action, which stays an element of its own, the blank lines only separate the two.
+                for pad_action in self._padActions if not elem.forced else []:
                     last_elem.append_line(pad_action.text_raw)
                     last_elem.append_tags(pad_action.tags)
             else:
@@ -168,11 +189,13 @@ class Parser:
 
         self._padActions = []
 
-        # Merge consecutive actions
+        # Merge consecutive actions. A forced action starts an element of its own, so that it keeps its `forced` and
+        # the Writer writes its `!` (a forced line merged into the action before it would read back as a character).
         if (
             self.mergeActions
             and elem.type == ElementType.ACTION
             and not elem.centered
+            and not elem.forced
             and last_elem
             and last_elem.type == ElementType.ACTION
             and not last_elem.centered
@@ -282,7 +305,8 @@ class Parser:
         Parses a forced scene heading. 
         A forced scene heading starts with a dot (`.`) followed by text.
         """
-        regex = re.compile(r"^\.[a-zA-Z0-9]")
+        # "a single leading period followed by an alphanumeric character" (fountain.io/syntax, Scene Headings), of any script
+        regex = re.compile(r"^\.[^\W_]")
         if regex.match(self._lineTrim):
             heading_data = self._decode_heading(self._lineTrim[1:])
             if heading_data:
@@ -382,7 +406,8 @@ class Parser:
                 self._add_element(Character(
                     name=character["name"],
                     extension=character["extension"],
-                    dual=character["dual"]
+                    dual=character["dual"],
+                    forced=True
                 ))
                 return True
         return False

@@ -23,6 +23,7 @@ class Element:
     def __init__(self, element_type, text):
         self.type = element_type
         self._text = text
+        self.line = None  # the source line it starts on, 1-based; set by the Fountain parser
         self.tags = []
 
     @property

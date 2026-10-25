@@ -73,7 +73,7 @@ This one shouldn't work, because blank line.
 Han (O. S.) 
 This shouldn't work.
 
-			Han (O.S.)
+			@Han (O.S.)
 	This should.
 
 			STEEL (V.O.)
@@ -88,7 +88,7 @@ Not work.
 			C3PO
 	Works
 
-			3CPO
+			@3CPO
 	Works
 
 			DONT
@@ -97,7 +97,7 @@ Not work.
 			ME
 	Should work
 
-			BUT ^ (Dual)
+			BUT (Dual) ^
 	Should work.
 
 AND ^ (Dual)

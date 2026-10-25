@@ -1,0 +1,23 @@
+# The Python implementation's tests, the one this fork maintains (README).
+name: python
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Unit tests
+        working-directory: python
+        run: python -m unittest discover -s tests
+      - name: Package builds
+        working-directory: python
+        run: python -m pip wheel --no-deps -w /tmp/wheel . && ls /tmp/wheel
