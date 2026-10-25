@@ -55,6 +55,8 @@ class Parser:
         self._inDialogue = False
 
         self._lineNumber = 0
+        self._stampLine = 0
+        self._blockLine = None
 
     def add_text(self, input_text):
         """Parse a block of text (UTF-8) into the script."""
@@ -70,6 +72,7 @@ class Parser:
     def add_line(self, line):
         """Parse a single line of text."""
         self._lineNumber += 1
+        self._stampLine = self._lineNumber
         self._parse_line(line)
         self._stamp_lines()
 
@@ -84,7 +87,7 @@ class Parser:
             for elem in reversed(elements):
                 if elem.line is not None:
                     break
-                elem.line = self._lineNumber
+                elem.line = self._stampLine
 
     def _parse_line(self, line):
         self._lastLine = self._line
@@ -150,6 +153,10 @@ class Parser:
 
     def finalize(self):
         """Complete parsing by processing any remaining pending elements."""
+        if self._boneyard:
+            self._boneyard.closed = False
+            self.script.boneyards.append(self._boneyard)
+            self._boneyard = None
         self._line = ""
         self._lineTrim = ""
         self._parse_pending()
@@ -520,6 +527,7 @@ class Parser:
             if idx > -1:  # Entering a boneyard block
                 self._lineBeforeBoneyard = self._line[:idx]
                 self._boneyard = Boneyard(self._line[idx + 2:])
+                self._enter_block()
                 return True
         else:
             # Check for the end of the current boneyard block
@@ -531,6 +539,7 @@ class Parser:
                 self._line = self._lineBeforeBoneyard + tag + self._line[idx + 2:]
                 self._lineBeforeBoneyard = ""
                 self._boneyard = None
+                self._leave_block()
             else:  # Still in boneyard
                 self._boneyard.append_line(self._line)
                 return True
@@ -564,6 +573,7 @@ class Parser:
             if idx > -1:  # Entering a note block
                 self._lineBeforeNote = self._line[:idx]
                 self._note = Note(self._line[idx + 2:])
+                self._enter_block()
                 return True
         else:
             # Check for the end of the current note block
@@ -575,18 +585,31 @@ class Parser:
                 self._line = self._lineBeforeNote + tag + self._line[idx + 2:]
                 self._lineBeforeNote = ""
                 self._note = None
+                self._leave_block()
             elif self._line=="":
                 # End of note due to line break
+                self._note.closed = False
                 self.script.notes.append(self._note)
                 tag = f"[[{len(self.script.notes) - 1}]]"
                 self._line = self._lineBeforeNote + tag
                 self._lineBeforeNote = ""
                 self._note = None
+                self._leave_block()
             else:  # Still in the note block
                 self._note.append_line(self._line)
                 return True
 
         return False
+
+    def _enter_block(self):
+        if self._blockLine is None:
+            self._blockLine = self._lineNumber
+
+    def _leave_block(self):
+        """The text a note or boneyard sat in is parsed on the line that closes it, but starts where the block opened."""
+        if not (self._note or self._boneyard):
+            self._stampLine = self._blockLine
+            self._blockLine = None
 
     def _parse_section(self):
         """
