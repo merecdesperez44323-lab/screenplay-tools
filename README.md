@@ -16,6 +16,9 @@
 >   caret is written last (Dual Dialogue: "the caret is the last character on the line"); a forced action (`!`) stays
 >   an element of its own, so its `!` is written (Line Breaks). Every fixture reads back the same after parse, write
 >   and parse.
+> - **Tests run on a case-sensitive file system.** Upstream's Python tests opened `Action-merged.txt`,
+>   `Dialogue-merged.txt` and their unmerged pairs, whose files are `Action-Merged.txt` and so on; macOS hid it. The
+>   Python tests now use the files' names (the shared fixtures keep theirs), and CI runs them on Linux.
 >
 > Known, kept as upstream: an unforced scene heading needs no blank line around it, though the spec says it "has a
 > blank line following it" and "always has at least one blank line preceding it"; the shared fixtures rely on that.
