@@ -133,11 +133,13 @@ class PageBreak(Element):
 class Note(Element):
     def __init__(self, text):
         super().__init__(ElementType.NOTE, text)
+        self.closed = True  # False for a [[ that a blank line ended before its ]]
 
 
 class Boneyard(Element):
     def __init__(self, text):
         super().__init__(ElementType.BONEYARD, text)
+        self.closed = True  # False for a /* that the script ended before its */
 
 
 class Section(Element):

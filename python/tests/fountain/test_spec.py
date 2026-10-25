@@ -69,6 +69,20 @@ class TestSpec(unittest.TestCase):
         self.assertEqual([(e.key, e.line) for e in script.titleEntries], [("Title", 1)])
         self.assertEqual([n.line for n in script.notes], [11])
 
+    def test_text_around_a_note_or_boneyard_starts_where_it_opens(self):
+        script = parse("INT. HOUSE - DAY\n\nShe waits. [[A note\nover two lines.]]\n\nDAN\nHello.\n\n/*\nCut.\n*/\n\nShe leaves.\n")
+        self.assertEqual([(e.type, e.line) for e in script.elements if e.text.strip() or e.type != ElementType.ACTION],
+                         [(ElementType.HEADING, 1), (ElementType.ACTION, 3), (ElementType.CHARACTER, 6),
+                          (ElementType.DIALOGUE, 7), (ElementType.ACTION, 13)])
+        self.assertEqual([(n.line, n.closed) for n in script.notes + script.boneyards], [(3, True), (9, True)])
+
+    def test_an_unclosed_note_or_boneyard_is_marked(self):
+        # Notes: "if you wish a note to contain an empty line, you must place two spaces there", so a blank line ends
+        # an unclosed one; Boneyard: text is hidden "between /* and */", so the script's end ends an unclosed one.
+        script = parse("INT. HOUSE - DAY\n\nShe waits. [[A note\n\nDAN\nHello.\n\n/* Cut from here.\n\nShe leaves.\n")
+        self.assertEqual([(n.type, n.line, n.closed) for n in script.notes + script.boneyards],
+                         [(ElementType.NOTE, 3, False), (ElementType.BONEYARD, 8, False)])
+
     def test_writer_writes_back_what_the_parser_reads(self):
         for path in fixtures():
             with self.subTest(os.path.basename(path)):
