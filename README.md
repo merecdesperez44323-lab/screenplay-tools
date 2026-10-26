@@ -10,8 +10,8 @@
 >   from 1. Text that a note or boneyard spanning lines sits in starts on the line the note or boneyard opens, not
 >   the line it closes.
 > - **Unclosed notes and boneyards are marked.** A note or boneyard has `closed`, False for a `[[` that a blank line
->   ended (Notes: "if you wish a note to contain an empty line, you must place two spaces there") and for a `/*` that
->   the script ended; an unclosed boneyard is kept in `boneyards` instead of dropped, so a caller can refuse it.
+>   ended (Notes: "if you wish a note to contain an empty line, you must place two spaces there") or the script
+>   ended, and for a `/*` that the script ended; an unclosed boneyard is kept in `boneyards` instead of dropped, so a caller can refuse it.
 > - **Forced scene headings in any script.** A leading period followed by any alphanumeric character forces a scene
 >   heading (Scene Headings: "a single leading period followed by an alphanumeric character"), so `.内景 茶馆 - 清晨`
 >   is a heading, not only `.SNIPER SCOPE POV`.

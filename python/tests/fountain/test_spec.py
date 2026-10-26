@@ -82,6 +82,12 @@ class TestSpec(unittest.TestCase):
         script = parse("INT. HOUSE - DAY\n\nShe waits. [[A note\n\nDAN\nHello.\n\n/* Cut from here.\n\nShe leaves.\n")
         self.assertEqual([(n.type, n.line, n.closed) for n in script.notes + script.boneyards],
                          [(ElementType.NOTE, 3, False), (ElementType.BONEYARD, 8, False)])
+        # One the script's end leaves open, in a parenthetical or an action, is marked too, and the text before it kept.
+        for text, line, kept in (("DAN\n(beat [[A note\nHello.\n", 4, "DAN"), ("She waits. [[A note\n", 3, "She waits. ")):
+            with self.subTest(text):
+                script = parse("INT. HOUSE - DAY\n\n" + text)
+                self.assertEqual([(n.line, n.closed) for n in script.notes], [(line, False)])
+                self.assertEqual(script.elements[1].text or script.elements[1].name, kept)
 
     def test_writer_writes_back_what_the_parser_reads(self):
         for path in fixtures():
