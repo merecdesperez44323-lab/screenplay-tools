@@ -157,6 +157,8 @@ class Parser:
             self._boneyard.closed = False
             self.script.boneyards.append(self._boneyard)
             self._boneyard = None
+        if self._note:  # the script's end ends an unclosed note as a blank line does
+            self.add_line("")
         self._line = ""
         self._lineTrim = ""
         self._parse_pending()
