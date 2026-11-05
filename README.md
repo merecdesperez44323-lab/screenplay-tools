@@ -12,6 +12,10 @@
 > - **Unclosed notes and boneyards are marked.** A note or boneyard has `closed`, False for a `[[` that a blank line
 >   ended (Notes: "if you wish a note to contain an empty line, you must place two spaces there") or the script
 >   ended, and for a `/*` that the script ended; an unclosed boneyard is kept in `boneyards` instead of dropped, so a caller can refuse it.
+> - **A blank line ends the dialogue after a parenthetical.** Text after a blank line that follows a parenthetical (or
+>   a forced character cue) is action, as after a line of dialogue (Line Breaks: without "two spaces on your 'blank'
+>   line", the text after it "is an Action element"); upstream read it as more dialogue, so `DAN` / `No.` /
+>   `(sobbing)` / blank / `He kneels.` gave Dan the line "He kneels.".
 > - **Forced scene headings in any script.** A leading period followed by any alphanumeric character forces a scene
 >   heading (Scene Headings: "a single leading period followed by an alphanumeric character"), so `.内景 茶馆 - 清晨`
 >   is a heading, not only `.SNIPER SCOPE POV`.
