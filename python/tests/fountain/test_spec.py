@@ -89,6 +89,19 @@ class TestSpec(unittest.TestCase):
                 self.assertEqual([(n.line, n.closed) for n in script.notes], [(line, False)])
                 self.assertEqual(script.elements[1].text or script.elements[1].name, kept)
 
+    def test_a_blank_line_ends_the_dialogue_after_a_parenthetical(self):
+        # Line Breaks: without "two spaces on your 'blank' line", the text after it "is an Action element"; Dialogue
+        # "is any text following a Character or Parenthetical element", and the blank line ends the block.
+        for cue in ("DAN", "@Dan"):
+            with self.subTest(cue):
+                script = parse(f"INT. HOUSE - DAY\n\n{cue}\nNo.\n(sobbing)\n\nHe kneels.\n")
+                self.assertEqual([(e.type, e.text) for e in script.elements[2:]],
+                                 [(ElementType.DIALOGUE, "No."), (ElementType.PARENTHETICAL, "sobbing"),
+                                  (ElementType.ACTION, "He kneels.")])
+        # Two spaces on the "blank" line keep the text after it dialogue.
+        script = parse("INT. HOUSE - DAY\n\nDAN\nNo.\n(sobbing)\n  \nPlease.\n")
+        self.assertEqual(script.elements[-1].type, ElementType.DIALOGUE)
+
     def test_writer_writes_back_what_the_parser_reads(self):
         for path in fixtures():
             with self.subTest(os.path.basename(path)):

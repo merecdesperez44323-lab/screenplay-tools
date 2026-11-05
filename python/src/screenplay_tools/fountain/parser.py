@@ -458,7 +458,11 @@ class Parser:
         """
         lastElem = self._get_last_elem()
 
-        if lastElem and self._line and lastElem.type in [ElementType.CHARACTER, ElementType.PARENTHETICAL]:
+        # A blank line ends the dialogue block: only a "blank" line of two spaces keeps the text after it dialogue,
+        # otherwise it "is an Action element" (Line Breaks). The same test as the continuation below.
+        blankLine = self._lastLineEmpty and len(self._lastLine) == 0
+        if lastElem and self._line and lastElem.type in [ElementType.CHARACTER, ElementType.PARENTHETICAL] \
+                and not blankLine:
             self._add_element(Dialogue(self._lineTrim))
             return True
 
